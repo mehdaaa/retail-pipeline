@@ -1,48 +1,37 @@
-Overview
-========
+# Data Pipeline : CSV vers BigQuery
 
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+## Description
 
-Project Contents
-================
+Ce projet met en place un pipeline de données permettant de récupérer des données de ventes à partir d'un fichier CSV et de les intégrer dans Google BigQuery. Les données sont ensuite transformées à l'aide de DBT et contrôlées en termes de qualité grâce à Soda.
 
-Your Astro project contains the following files and folders:
+Les étapes du projet comprennent :
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
-    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://www.astronomer.io/docs/learn/get-started-with-airflow).
-- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
-- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
+1. **Récupération et chargement des données** depuis un fichier CSV vers BigQuery avec **Airflow** (via Astro).
+2. **Transformation des données** dans BigQuery à l'aide de **DBT** pour générer quatre tables distinctes.
+3. **Contrôle de la qualité des données** avec **Soda** pour garantir leur précision et intégrité.
 
-Deploy Your Project Locally
-===========================
+## Technologies utilisées
 
-1. Start Airflow on your local machine by running 'astro dev start'.
+- **Apache Airflow (Astro)** : Orchestration du pipeline de données.
+- **DBT (Cosmos)** : Transformation des données dans BigQuery.
+- **Soda** : Vérification de la qualité des données.
+- **Google BigQuery** : Stockage des données transformées.
 
-This command will spin up 4 Docker containers on your machine, each for a different Airflow component:
+## Structure des données
 
-- Postgres: Airflow's Metadata Database
-- Webserver: The Airflow component responsible for rendering the Airflow UI
-- Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- Triggerer: The Airflow component responsible for triggering deferred tasks
+Les données dans le CSV contiennent les colonnes suivantes :
 
-2. Verify that all 4 Docker containers were created by running 'docker ps'.
+- **InvoiceNo** : Numéro de la facture.
+- **StockCode** : Code produit.
+- **Description** : Description du produit.
+- **Quantity** : Quantité achetée.
+- **InvoiceDate** : Date de la facture.
+- **UnitPrice** : Prix unitaire.
+- **CustomerID** : ID client.
+- **Country** : Pays d'achat.
 
-Note: Running 'astro dev start' will start your project with the Airflow Webserver exposed at port 8080 and Postgres exposed at port 5432. If you already have either of those ports allocated, you can either [stop your existing Docker containers or change the port](https://www.astronomer.io/docs/astro/cli/troubleshoot-locally#ports-are-not-available-for-my-local-airflow-webserver).
+## Modèle de données
 
-3. Access the Airflow UI for your local Airflow project. To do so, go to http://localhost:8080/ and log in with 'admin' for both your Username and Password.
+Le processus de transformation via DBT crée quatre tables distinctes dans BigQuery :
 
-You should also be able to access your Postgres Database at 'localhost:5432/postgres'.
-
-Deploy Your Project to Astronomer
-=================================
-
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://www.astronomer.io/docs/astro/deploy-code/
-
-Contact
-=======
-
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+![Tables de données](include/images/data_tables.png)
